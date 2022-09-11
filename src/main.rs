@@ -1,25 +1,15 @@
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use askama::Template;
 use botip::args::Args;
 use env_logger::Env;
-use lazy_static::lazy_static;
 use log::{error, info};
 use std::collections::HashMap;
-use std::error::Error;
 use std::io::Result;
-use tera::{Context, Tera};
 
-lazy_static! {
-    pub static ref TEMPLATES: Tera = {
-        let mut tera_engi = match Tera::new("templates/**/*") {
-            Ok(t) => t,
-            Err(e) => {
-                println!("Parsing error(s): {}", e);
-                ::std::process::exit(1);
-            }
-        };
-        tera_engi.autoescape_on(vec![".html", ".sql"]);
-        tera_engi
-    };
+#[derive(Template)]
+#[template(path = "index.html")]
+struct TemplateContext {
+    ip_address_v4: String,
 }
 
 fn request_is_bot(user_agent: &str) -> bool {
@@ -70,18 +60,14 @@ async fn get_ip(req: HttpRequest) -> impl Responder {
     if is_bot {
         return HttpResponse::Ok().body(ip);
     }
-    let mut ctx: Context = Context::new();
-    ctx.insert("ip_address_v4", &ip);
 
-    match TEMPLATES.render("index.html", &ctx) {
-        Ok(tpl) => HttpResponse::Ok().body(tpl),
+    let tpl = TemplateContext { ip_address_v4: ip };
+
+    match tpl.render() {
+        Ok(rendered) => HttpResponse::Ok().body(rendered),
         Err(e) => {
-            let mut cause = e.source();
-            while let Some(e) = cause {
-                error!("Could not render template due to: {}", e);
-                cause = e.source();
-            }
-            HttpResponse::InternalServerError().body(cause.unwrap().to_string())
+            error!("Could not render template due to: {}", e);
+            HttpResponse::InternalServerError().body("an internal server error occurred")
         }
     }
 }
