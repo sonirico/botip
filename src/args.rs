@@ -43,7 +43,7 @@ impl Args {
             .collect();
 
         if lookup_headers.is_empty() {
-            lookup_headers = vec!["x-forwarded-host".to_string(), "x-real-ip".to_string()];
+            lookup_headers = vec!["x-forwarded-for".to_string(), "x-real-ip".to_string()];
         }
 
         Self {
