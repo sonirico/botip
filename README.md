@@ -2,7 +2,7 @@
 
 **The fast, reliable, and free IP address detection service for bots, scripts, and humans.**
 
-[![Website](https://img.shields.io/website?url=http%3A%2F%2Fbotwhatismyipaddress.com)](http://botwhatismyipaddress.com)
+[![Website](https://img.shields.io/website?url=http%3A%2F%2Fbotwhatismyipaddress.com%2Fhealth)](http://botwhatismyipaddress.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 🌐 Live Service
